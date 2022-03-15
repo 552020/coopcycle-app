@@ -57,6 +57,8 @@ export const REGISTRATION_ERRORS = '@app/REGISTRATION_ERRORS'
 export const SET_BACKGROUND_GEOLOCATION_ENABLED = '@app/SET_BACKGROUND_GEOLOCATION_ENABLED'
 export const BACKGROUND_PERMISSION_DISCLOSED = '@app/BACKGROUND_PERMISSION_DISCLOSED'
 
+export const ONBOARDED = '@app/ONBOARDED'
+
 /*
  * Action Creators
  */
@@ -102,6 +104,8 @@ export const setInternetReachable = createAction(SET_INTERNET_REACHABLE)
 
 export const setBackgroundGeolocationEnabled = createAction(SET_BACKGROUND_GEOLOCATION_ENABLED)
 export const backgroundPermissionDisclosed = createAction(BACKGROUND_PERMISSION_DISCLOSED)
+
+export const onboarded = createAction(ONBOARDED)
 
 const registrationErrors = createAction(REGISTRATION_ERRORS)
 
@@ -291,7 +295,7 @@ export function selectServer(server) {
   }
 }
 
-export function bootstrap(baseURL, user) {
+export function bootstrap(baseURL, user, loader = true) {
 
   return async (dispatch, getState) => {
 
@@ -306,7 +310,9 @@ export function bootstrap(baseURL, user) {
     dispatch(setBaseURL(baseURL))
     setRolesProperty(user)
 
-    dispatch(loadMyRestaurantsRequest())
+    if (loader) {
+      dispatch(loadMyRestaurantsRequest())
+    }
 
     const values = await loadAll(getState)
 

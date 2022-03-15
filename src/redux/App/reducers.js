@@ -1,4 +1,5 @@
 /*
+/*
  * App reducer, dealing with non-domain specific state
  */
 import { CONNECTED, DISCONNECTED } from '../middlewares/CentrifugoMiddleware'
@@ -29,10 +30,12 @@ import {
   SET_INTERNET_REACHABLE,
   REGISTRATION_ERRORS,
   SET_BACKGROUND_GEOLOCATION_ENABLED,
-  BACKGROUND_PERMISSION_DISCLOSED,
+  BACKGROUND_PERMISSION_DISCLOSED, ONBOARDED,
 } from './actions'
 
 const initialState = {
+  customBuild: true,
+  firstRun: true,
   isWsOpen: false,
   baseURL: null,
   httpClient: null,
@@ -259,6 +262,12 @@ export default (state = initialState, action = {}) => {
       return {
         ...state,
         hasDisclosedBackgroundPermission: true,
+      }
+
+    case ONBOARDED:
+      return {
+        ...state,
+        firstRun: false,
       }
   }
 
