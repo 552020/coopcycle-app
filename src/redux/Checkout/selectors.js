@@ -127,7 +127,6 @@ export const selectRestaurants = createSelector(
   state => state.checkout.restaurants,
   restaurants => _.sortBy(restaurants, [
     restaurant => {
-
       if (restaurant.timing.delivery) {
 
         return timingToInteger(restaurant.timing.delivery)
@@ -141,4 +140,14 @@ export const selectRestaurants = createSelector(
       return NEXT_YEAR
     },
   ])
+)
+
+export const filterActive = createSelector(
+  state => state.checkout.restaurantsFilter,
+  restaurantsFilter => restaurantsFilter !== null
+)
+
+export const cartItemsCountBadge = createSelector(
+  state => Object.keys(state.checkout.carts),
+  items => items.length
 )

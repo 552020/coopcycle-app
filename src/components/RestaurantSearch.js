@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { Platform, StyleSheet, View, TouchableOpacity } from 'react-native'
-import { Icon } from 'native-base'
+import {Icon, Text} from 'native-base'
 import { withTranslation } from 'react-i18next'
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5'
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons'
@@ -13,7 +13,8 @@ const textInputContainerHeight = 54
 const styles = StyleSheet.create({
   container: {
     position: 'absolute',
-    backgroundColor: '#e4022d',
+    //TODO: color
+    backgroundColor: '#f8781f',
     ...Platform.select({
       android: {
         flex: 1,
@@ -50,13 +51,17 @@ class RestaurantSearch extends Component {
     return (
       <View style={{ flexDirection: 'row', alignItems: 'center', paddingVertical: 5, paddingLeft: 10, paddingRight: 15 }}>
         <TouchableOpacity
-          style={{ marginRight: 15 }}
           { ...touchableProps }>
           <Icon as={ FontAwesome5 } name={ iconName } style={{ color: '#ffffff', fontSize: iconSize }} />
         </TouchableOpacity>
         <TouchableOpacity
+          style={{ marginRight: 15 }}
           onPress={ () => AddressUtils.getAddressFromCurrentPosition().then(address => this.props.onSelect(address)) }>
           <Icon as={ MaterialIcons } name="my-location" style={{ color: '#ffffff', fontSize: 24 }} />
+        </TouchableOpacity>
+        <TouchableOpacity
+          onPress={ this.props.onSort } >
+          <Icon as={ MaterialIcons } name="sort" style={{ color: '#ffffff', fontSize: 24 }} />
         </TouchableOpacity>
       </View>
     )

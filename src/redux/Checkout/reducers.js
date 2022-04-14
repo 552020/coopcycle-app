@@ -35,14 +35,27 @@ import {
   LOAD_PAYMENT_DETAILS_FAILURE,
   UPDATE_CUSTOMER_GUEST,
   HIDE_MULTIPLE_SERVERS_IN_SAME_CITY_MODAL,
+  APPLY_RESTAURANTS_FILTERS,
+  CLEAR_RESTAURANTS_FILTERS, INIT_CART_SUCCESS, SET_TOKEN, SET_CART_POINTER,
 } from './actions'
 
 import i18n from '../../i18n'
 import _ from 'lodash'
 
 const initialState = {
-  cart: null,
-  address: null,
+  _cart: null,
+  cartPointer: null,
+  carts: {},
+  address: {
+    'streetAddress': '64 Rue Maréchal Joffre, 44000 Nantes, France',
+    'postalCode': '44000',
+    'addressLocality': 'Nantes',
+    'geo': {
+      'latitude': 47.2208258,
+      'longitude': -1.5486117,
+    },
+    'isPrecise': true,
+  },
   isAddressOK: null,
   addressModalMessage: '',
   date: null,
@@ -68,6 +81,7 @@ const initialState = {
   paymentDetailsLoaded: false,
   guest: null,
   showMultipleServersInSameCityModal: true,
+  restaurantsFilter: null,
 }
 
 export default (state = initialState, action = {}) => {
@@ -139,13 +153,34 @@ export default (state = initialState, action = {}) => {
 
       return {
         ...state,
+        cart: state.carts[action.payload.restaurant['@id']].cart,
+        token: state.carts[action.payload.restaurant['@id']].token,
         isFetching: false,
         restaurant: action.payload.restaurant,
-        cart: action.payload.cart,
         menu: action.payload.restaurant.hasMenu,
-        token: action.payload.token,
         isAddressOK: null, // We don't know if it's valid
         itemRequestStack: [],
+      }
+
+    case SET_TOKEN:
+      return {
+        ...state,
+        token: action.payload,
+      }
+
+    case SET_CART_POINTER:
+      return {
+        ...state,
+        cartPointer: action.payload,
+      }
+
+    case INIT_CART_SUCCESS:
+      return {
+        ...state,
+        carts: {
+          ...state.carts,
+          [action.payload.cart.restaurant]: action.payload,
+        },
       }
 
     case CLEAR:
@@ -249,7 +284,15 @@ export default (state = initialState, action = {}) => {
     case UPDATE_CART_SUCCESS:
       return {
         ...state,
-        cart: action.payload,
+        carts: {
+          ...state.carts,
+          [action.payload.restaurant]:
+            {
+              ...state.carts[action.payload.restaurant],
+              cart: action.payload,
+            },
+        },
+        //cart: action.payload,
         isFetching: false,
       }
 
@@ -336,6 +379,18 @@ export default (state = initialState, action = {}) => {
       return {
         ...state,
         showMultipleServersInSameCityModal: false,
+      }
+
+    case APPLY_RESTAURANTS_FILTERS:
+      return {
+        ...state,
+        restaurantsFilter: action.payload.filter,
+      }
+
+    case CLEAR_RESTAURANTS_FILTERS:
+      return {
+        ...state,
+        restaurantsFilter: null,
       }
 
   }

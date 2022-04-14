@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { FlatList, StyleSheet, TouchableOpacity, View, Image, ImageBackground, useColorScheme } from 'react-native'
-import { Text, Icon, HStack, Center } from 'native-base'
+import {Text, Icon, HStack, Center, Skeleton} from 'native-base'
 import { withTranslation } from 'react-i18next'
 import FontAwesome from 'react-native-vector-icons/FontAwesome'
 import Ionicons from 'react-native-vector-icons/Ionicons'
@@ -59,10 +59,16 @@ const OneLineText = (props) => (
 const TimingBadge = ({ restaurant }) => {
 
   const colorScheme = useColorScheme()
-
+  if (0) {
+    return (
+      <HStack style={[styles.badge]} px="2">
+        <Skeleton h={30} w={130} borderRadius={4} />
+      </HStack>
+    )
+  }
   return (
     <HStack style={ [ styles.badge ] } bg={ colorScheme === 'dark' ? 'gray.800' : 'gray.200' } px="2">
-      <Icon as={ FontAwesome } name="clock-o" size="xs" mr="1" />
+      <Icon as={ FontAwesome } name="clock-o" size="xs" mr="1"  />
       <Text style={ styles.badgeText }>{ getNextShippingTimeAsText(restaurant) }</Text>
     </HStack>
   )

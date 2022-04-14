@@ -69,7 +69,7 @@ function mapStateToProps(state) {
 
   return {
     isLoading: state.checkout.isLoading,
-    cart: state.checkout.cart,
+    //cart: state.checkout.cart,
   }
 }
 

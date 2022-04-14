@@ -6,6 +6,8 @@
         "COURIER": "Coursier",
         "TASK": "Tâche",
         "TASKS": "Tâches",
+        "ITEM": "Article",
+        "ITEMS": "Articles",
         "TASK_LIST": "Liste des tâches",
         "WS_NOT_CONNECTED_WARNING": "Refresh automatique désactivé. Reconnexion..",
         "DISPATCH": "Dispatch",

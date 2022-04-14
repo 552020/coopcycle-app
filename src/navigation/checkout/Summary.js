@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import {
   Animated,
   Dimensions,
-  FlatList,
+  FlatList, ImageBackground,
   InteractionManager,
   StyleSheet,
   TouchableOpacity,
@@ -40,7 +40,7 @@ const mapAdjustments = (adjustments, type) => _.map(adjustments, (adjustment, in
 ))
 
 const CollectionDisclaimerModal = withTranslation()(({ isVisible, onSwipeComplete, t, restaurant }) => {
-
+//<Text style={{ fontSize: 14 }}>{ t('CART_COLLECTION_DISCLAIMER', { telephone: restaurant.telephone }) }</Text>
   return (
     <Modal
       isVisible={ isVisible }
@@ -48,7 +48,7 @@ const CollectionDisclaimerModal = withTranslation()(({ isVisible, onSwipeComplet
       swipeDirection={ ['up', 'down'] }>
       <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', padding: 20 }}>
         <View style={{ backgroundColor: '#ffffff', paddingHorizontal: 20, paddingVertical: 30 }}>
-          <Text style={{ fontSize: 14 }}>{ t('CART_COLLECTION_DISCLAIMER', { telephone: restaurant.telephone }) }</Text>
+
         </View>
       </View>
     </Modal>
@@ -67,6 +67,24 @@ const ActionButton = withTranslation()(({ isLoading, onPress, iconName, children
   )
 })
 
+const GroupImageHeader = ({ restaurant, scale }) => {
+
+  return (
+    <Animated.View style={{
+      width: '100%',
+      height: '100%',
+    }}>
+      <ImageBackground source={{ uri: restaurant.image }} style={{ width: '100%', height: '100%' }}>
+        <View style={ styles.overlay }>
+          <View style={{ height: 60, justifyContent: 'center' }}>
+            <Text style={ styles.restaurantName } numberOfLines={ 1 }>{ restaurant.name }</Text>
+          </View>
+        </View>
+      </ImageBackground>
+    </Animated.View>
+  );
+};
+
 class Summary extends Component {
 
   constructor(props) {
@@ -80,7 +98,7 @@ class Summary extends Component {
 
   componentDidMount() {
     InteractionManager.runAfterInteractions(() => {
-      this.props.validate()
+      this.props.validate(this.props.cart)
     })
   }
 
@@ -97,10 +115,10 @@ class Summary extends Component {
     }
   }
 
-  _navigate(routeName) {
+  _navigate(routeName, cart = {}) {
     // Set edit = false before navigating
     this.props.navigation.setParams({ 'edit': false })
-    this.props.navigation.navigate(routeName)
+    this.props.navigation.navigate(routeName, cart)
   }
 
   _renderItemAdjustments(item, index) {
@@ -203,6 +221,7 @@ class Summary extends Component {
     return (
       <CartFooter
         onSubmit={ this.onSubmit.bind(this) }
+        cart={cart}
         testID="cartSummarySubmit"
         disabled={ this.props.isValid !== true || this.props.isLoading } />
     )
@@ -219,7 +238,7 @@ class Summary extends Component {
 
   render() {
 
-    const { cart } = this.props
+    const { cart, restaurant } = this.props
 
     if (!cart || cart.items.length === 0) {
 
@@ -257,7 +276,7 @@ class Summary extends Component {
           </TouchableOpacity>
           )}
           <ActionButton
-            onPress={ () => this._navigate('CheckoutShippingDate') }
+            onPress={ () => this._navigate('CheckoutShippingDate', {cart, restaurant}) }
             iconName="clock-o">
             <Text style={{ flex: 2, fontSize: 14 }}>{ this.props.timeAsText }</Text>
             <Text note style={{ flex: 1, textAlign: 'right' }}>{ this.props.t('EDIT') }</Text>
@@ -285,7 +304,8 @@ class Summary extends Component {
           </ActionButton>
           )}
         </View>
-        <View style={{ flex: 0, backgroundColor: '#e4022d' }}>
+
+        <View style={{ flex: 0, backgroundColor: '#f8781f' }}>
           <BottomLine label={ this.props.t('TOTAL_ITEMS') } value={ cart.itemsTotal } />
           { this.props.fulfillmentMethod === 'delivery' && (
           <BottomLine label={ this.props.t('TOTAL_DELIVERY') } value={ this.props.deliveryTotal } />
@@ -347,7 +367,8 @@ const styles = StyleSheet.create({
 function mapStateToProps(state, ownProps) {
 
   return {
-    cart: state.checkout.cart,
+    cart: ownProps.route.params?.cart || state.checkout.cart,
+    restaurant: ownProps.route.params?.restaurant,
     edit: ownProps.route.params?.edit || false,
     isAuthenticated: selectIsAuthenticated(state),
     deliveryTotal: selectDeliveryTotal(state),
@@ -356,7 +377,6 @@ function mapStateToProps(state, ownProps) {
     isValid: state.checkout.isValid,
     alertMessage: _.first(state.checkout.violations.map(v => v.message)),
     fulfillmentMethod: selectCartFulfillmentMethod(state),
-    restaurant: state.checkout.restaurant,
   }
 }
 
@@ -365,7 +385,7 @@ function mapDispatchToProps(dispatch) {
     incrementItem: item => dispatch(incrementItem(item)),
     decrementItem: item => dispatch(decrementItem(item)),
     removeItem: item => dispatch(removeItem(item)),
-    validate: () => dispatch(validate()),
+    validate: cart => dispatch(validate(cart)),
     showAddressModal: () => dispatch(showAddressModal()),
     hideAddressModal: () => dispatch(hideAddressModal()),
     updateCart: (cart, cb) => dispatch(updateCart(cart, cb)),

@@ -43,6 +43,9 @@ const SectionHeader = ({ section }) => {
 }
 
 class Menu extends Component {
+  shouldComponentUpdate(nextProps: Readonly<P>, nextState: Readonly<S>, nextContext: any): boolean {
+    return false
+  }
 
   renderItem(item, index, section) {
 
